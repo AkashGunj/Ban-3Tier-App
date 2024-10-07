@@ -1,0 +1,40 @@
+services:
+  bankappservice:
+    container_name: Bank-Service
+    image: akashgun/bank-app:latest
+    restart: always
+    ports:
+      - "3421:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/bankappdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+    networks:
+      bankappnetwork:
+        ipv4_address: 10.70.0.10
+    depends_on:
+      - db
+
+  db:
+    container_name: mysql-app-db
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bankappdb
+    networks:
+      bankappnetwork:
+        ipv4_address: 10.70.0.100
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+networks:
+  bankappnetwork:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.70.0.0/24
+
+volumes:
+  mysql-data: {}
